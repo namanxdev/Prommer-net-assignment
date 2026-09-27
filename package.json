@@ -1,0 +1,14 @@
+{
+  "name": "truth-drift-gate",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Check prommer.net locale location copy against English and JSON-LD.",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "check": "node gate.js",
+    "test": "node --test gate.test.js"
+  },
+  "dependencies": {
+    "cheerio": "1.0.0-rc.12"
+  }
+}
