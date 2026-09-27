@@ -6,6 +6,7 @@
   "engines": { "node": ">=18" },
   "scripts": {
     "check": "node gate.js",
+    "build": "node build.js",
     "test": "node --test gate.test.js"
   },
   "dependencies": {

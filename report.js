@@ -116,7 +116,7 @@ function renderReport(report) {
       .hero { padding:42px 0 30px; } h1 { letter-spacing:-1.7px; } .description { font-size:14px; }
       .metrics { grid-template-columns:repeat(4,minmax(0,1fr)); } .metric { padding:18px 11px; } .metric.total { grid-column:1 / -1; flex-direction:row; align-items:center; justify-content:space-between; border-right:0; border-bottom:1px solid var(--line); } .metric dd { font-size:29px; } .metric dt { font-size:9px; letter-spacing:.6px; }
       .section-head { display:block; } .reference { margin-top:7px; max-width:none; } .results { padding-top:34px; }
-      table,tbody { display:block; } thead { display:none; } tr { display:grid; grid-template-columns:1fr 1fr; padding:16px; border:1px solid var(--line); margin-bottom:12px; background:var(--surface); gap:14px 18px; }
+      table,tbody { display:block; } thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; } tbody tr { display:grid; grid-template-columns:1fr 1fr; padding:16px; border:1px solid var(--line); margin-bottom:12px; background:var(--surface); gap:14px 18px; }
       th,td,th:first-child,td:first-child { display:block; border:0; padding:0; width:auto !important; font-size:13px; }
       td::before,tbody th::before { content:attr(data-label); display:block; font-family:'Cascadia Code',Consolas,monospace; font-size:9px; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); margin-bottom:5px; font-weight:400; }
       td:nth-child(5),td:nth-child(6),td:nth-child(7) { grid-column:1 / -1; } td.reason { font-size:12px; }

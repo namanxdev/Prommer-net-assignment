@@ -1,0 +1,4 @@
+.playwright-mcp/
+public/
+.env*
+APPLICATION-ANSWERS.md

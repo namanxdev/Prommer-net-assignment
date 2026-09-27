@@ -3,11 +3,11 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const cheerio = require('cheerio');
-const { mkdtempSync, copyFileSync, readFileSync, readdirSync, unlinkSync, rmdirSync } = require('node:fs');
+const { mkdtempSync, copyFileSync, readFileSync, readdirSync, writeFileSync, existsSync, unlinkSync, rmdirSync } = require('node:fs');
 const { tmpdir } = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
-const { extractPage, evaluateRows, fetchPage, fetchFacts } = require('./gate');
+const { extractPage, evaluateRows, fetchPage, fetchFacts, validateFacts } = require('./gate');
 const { renderReport } = require('./report');
 const defaultFacts = require('./facts');
 
@@ -35,6 +35,36 @@ test('extracts the hero city with selector priority and Indonesian lead fallback
   assert.equal(extractPage('<p class="lead">Berbasis di Los Angeles</p>').visibleCity, 'Los Angeles');
   assert.equal(extractPage('<p class="hero-subtitle">Welcome</p><p class="lead">New York-based</p>').visibleCity, 'New York');
   assert.equal(extractPage('<p class="hero-subtitle">Based in <strong>Los Angeles</strong></p>').visibleCity, 'Los Angeles');
+  assert.equal(extractPage('<p class="hero-subtitle">Asun Los Angelesissa</p>').visibleCity, 'Los Angeles', 'substring matching supports inflected locale copy');
+});
+
+test('ignores explicitly hidden descendants and hidden selector ancestors', () => {
+  for (const attributes of ['hidden', 'aria-hidden="true"', 'style="display: none"', 'style="visibility: hidden"']) {
+    assert.equal(extractPage(`<p class="hero-subtitle"><span ${attributes}>New York</span>Los Angeles</p>`).visibleCity, 'Los Angeles', attributes);
+    assert.equal(extractPage(`<div ${attributes}><p class="hero-subtitle">New York</p></div><p class="lead">Los Angeles</p>`).visibleCity, 'Los Angeles', `ancestor ${attributes}`);
+    assert.equal(extractPage(`<p class="hero-subtitle" ${attributes}>New York</p>`).visibleCity, null, `selector ${attributes}`);
+  }
+  for (const tag of ['script', 'style', 'template']) {
+    assert.equal(extractPage(`<p class="hero-subtitle"><${tag}>New York</${tag}>Los Angeles</p>`).visibleCity, 'Los Angeles', tag);
+  }
+});
+
+test('validates facts configuration before extraction or fetching', async () => {
+  const valid = { name: 'role', values: ['Consultant'], selectors: ['p.role'], jsonLdKey: 'jobTitle' };
+  assert.doesNotThrow(() => validateFacts([valid]));
+  const invalidConfigurations = [
+    null, {}, [], [valid, { ...valid }],
+    [{ ...valid, name: '' }], [{ ...valid, name: ' ' }], [{ ...valid, name: undefined }],
+    [{ ...valid, jsonLdKey: '' }], [{ ...valid, jsonLdKey: undefined }],
+    [{ ...valid, values: [] }], [{ ...valid, values: [''] }], [{ ...valid, values: [7] }], [{ ...valid, values: 'Consultant' }],
+    [{ ...valid, selectors: [] }], [{ ...valid, selectors: [''] }], [{ ...valid, selectors: [7] }], [{ ...valid, selectors: 'p.role' }],
+    [{ ...valid, selectors: ['p['] }],
+  ];
+  for (const config of invalidConfigurations) assert.throws(() => validateFacts(config), undefined, JSON.stringify(config));
+  assert.throws(() => extractPage('<p class="role">Consultant</p>', []));
+  let calls = 0;
+  await assert.rejects(fetchFacts('en', async () => { calls++; return response(''); }, []));
+  assert.equal(calls, 0, 'invalid configuration must fail before the network request');
 });
 
 test('never infers visible location from JSON-LD, footer, or an unrelated element', () => {
@@ -156,6 +186,19 @@ test('distinguishes a fully passing report from an incomplete report', () => {
   ]);
   assert.equal(incomplete.verdict, 'INCOMPLETE');
   assert.deepEqual(incomplete.summary, { total: 2, locales: 2, facts: 1, pass: 1, drift: 0, conflict: 0, unknown: 1 });
+  const empty = evaluateRows([]);
+  assert.equal(empty.verdict, 'INCOMPLETE');
+  assert.equal(empty.summary.pass, 0);
+});
+
+test('a missing EN fact baseline cannot resolve to an inherited object property', () => {
+  const report = evaluateRows([{
+    locale: 'de', fact: 'constructor', visibleValue: 'Engineer', jsonLdValues: ['Engineer'],
+    httpStatus: 200, statuses: [], reason: null, url: 'https://prommer.net/de/',
+  }]);
+  assert.deepEqual(report.rows[0].statuses, ['UNKNOWN']);
+  assert.match(report.rows[0].reason, /EN source unavailable/);
+  assert.equal(report.verdict, 'INCOMPLETE');
 });
 
 test('evaluates each fact against its corresponding EN baseline independently', () => {
@@ -253,6 +296,18 @@ test('CLI writes both reports and uses exit 1 only for detected disagreement', (
       assert.equal($('tbody tr').length, 13);
       assert.equal($('time').attr('datetime'), report.timestamp);
     }
+    for (const filename of ['report.json', 'index.html']) unlinkSync(path.join(directory, filename));
+    writeFileSync(path.join(directory, 'facts.js'), "'use strict';\nmodule.exports = [];\n");
+    const invalid = spawnSync(process.execPath, ['gate.js'], {
+      cwd: directory,
+      env: { ...process.env, NODE_PATH: path.join(__dirname, 'node_modules') },
+      encoding: 'utf8', timeout: 15000, windowsHide: true,
+    });
+    assert.ifError(invalid.error);
+    assert.equal(invalid.status, 2, invalid.stderr);
+    assert.match(invalid.stderr, /fact|config/i);
+    assert.equal(existsSync(path.join(directory, 'report.json')), false);
+    assert.equal(existsSync(path.join(directory, 'index.html')), false);
   } finally {
     // Only this test's newly created directory contains these temporary files.
     for (const filename of readdirSync(directory)) unlinkSync(path.join(directory, filename));

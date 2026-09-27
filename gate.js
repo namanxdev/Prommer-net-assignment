@@ -13,13 +13,41 @@ function pageUrl(locale) {
   return locale === 'en' ? 'https://prommer.net/' : `https://prommer.net/${locale}/`;
 }
 
+function validateFacts(factsConfig) {
+  if (!Array.isArray(factsConfig) || !factsConfig.length) throw new Error('Configure at least one fact in facts.js');
+  const names = new Set();
+  const $ = cheerio.load('');
+  const nonemptyString = value => typeof value === 'string' && value.trim().length > 0;
+  for (const fact of factsConfig) {
+    if (!fact || !nonemptyString(fact.name) || !nonemptyString(fact.jsonLdKey)) throw new Error('Every fact needs a name and jsonLdKey');
+    if (names.has(fact.name)) throw new Error(`Duplicate fact name: ${fact.name}`);
+    names.add(fact.name);
+    for (const key of ['values', 'selectors']) {
+      if (!Array.isArray(fact[key]) || !fact[key].length || !fact[key].every(nonemptyString)) {
+        throw new Error(`Fact ${fact.name} needs nonempty string ${key}`);
+      }
+    }
+    for (const selector of fact.selectors) $(selector);
+  }
+}
+
 function extractPage(html, factsConfig = FACTS) {
+  validateFacts(factsConfig);
   const $ = cheerio.load(html);
+  const isHidden = element => {
+    const node = $(element);
+    return ['script', 'style', 'template'].includes(element.name) || node.attr('hidden') !== undefined ||
+      (node.attr('aria-hidden') || '').toLowerCase() === 'true' ||
+      /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*(?:hidden|collapse))\s*(?:!important\s*)?(?:;|$)/i.test(node.attr('style') || '');
+  };
   const facts = factsConfig.map(config => {
     let visibleValue = null;
     for (const selector of config.selectors) {
       for (const element of $(selector).toArray()) {
-        const text = $(element).text().replace(/\s+/g, ' ').trim().toLowerCase();
+        if ($(element).parents().addBack().toArray().some(isHidden)) continue;
+        const visibleElement = $(element).clone();
+        visibleElement.find('*').filter((_, child) => isHidden(child)).remove();
+        const text = visibleElement.text().replace(/\s+/g, ' ').trim().toLowerCase();
         visibleValue = config.values.find(value => text.includes(value.toLowerCase())) || null;
         if (visibleValue !== null) break;
       }
@@ -67,6 +95,7 @@ function extractPage(html, factsConfig = FACTS) {
 }
 
 async function fetchFacts(locale, fetchImpl = fetch, factsConfig = FACTS) {
+  validateFacts(factsConfig);
   const rows = factsConfig.map(config => ({ locale, fact: config.name, url: pageUrl(locale), httpStatus: null, visibleValue: null, jsonLdValues: [], statuses: [], reason: null }));
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -136,7 +165,7 @@ function evaluateRows(inputRows) {
       row.statuses.push('CONFLICT');
       reasons.push(row.jsonLdValues.length ? `Visible ${row.fact} is absent from this page’s JSON-LD values` : `No JSON-LD values found for ${row.fact}`);
     }
-    if (sourceFacts[row.fact] != null) {
+    if (Object.hasOwn(sourceFacts, row.fact) && sourceFacts[row.fact] != null) {
       if (row.visibleValue !== sourceFacts[row.fact]) {
         row.statuses.push('DRIFT');
         reasons.push(`Visible ${row.fact} differs from EN (${sourceFacts[row.fact]})`);
@@ -155,11 +184,12 @@ function evaluateRows(inputRows) {
     source: { locale: 'en', url: pageUrl('en'), facts: sourceFacts, visibleCity: sourceFacts.city ?? null },
     rows,
     summary,
-    verdict: summary.drift || summary.conflict ? 'FAIL' : summary.unknown ? 'INCOMPLETE' : 'PASS',
+    verdict: summary.drift || summary.conflict ? 'FAIL' : summary.unknown || !summary.total ? 'INCOMPLETE' : 'PASS',
   };
 }
 
 async function main() {
+  validateFacts(FACTS);
   const { renderReport } = require('./report');
   const rows = new Array(LOCALES.length);
   let next = 0;
@@ -184,4 +214,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { LOCALES, USER_AGENT, pageUrl, extractPage, fetchPage, fetchFacts, evaluateRows, main };
+module.exports = { LOCALES, USER_AGENT, pageUrl, validateFacts, extractPage, fetchPage, fetchFacts, evaluateRows, main };

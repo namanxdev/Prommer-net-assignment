@@ -29,6 +29,18 @@ Exit codes:
 
 CI should retain the generated reports even when the check exits 1. A static report displays the recorded run and does not fetch the site when opened.
 
+## Deploy to Vercel
+
+Generate and review the latest report with `npm run check`, then deploy the saved snapshot:
+
+```sh
+npm run build
+vercel login
+vercel deploy --prod --yes
+```
+
+`build.js` renders `public/index.html` from the saved `report.json` and copies that JSON into `public/`. It uses only Node built-ins. The [Vercel configuration](https://vercel.com/docs/project-configuration/vercel-json) skips dependency installation and publishes this output directory. Deploying does not rerun the network check, so a deliberate gate exit code 1 does not prevent publishing the findings. To update the site, rerun the check, review and commit its outputs, then deploy again.
+
 ## Pages and extraction
 
 The checked locales are `en de es fr pt it nl fi sv pl id da cs`.
@@ -54,6 +66,10 @@ module.exports = [
 ```
 
 To check another fact, add an object with a unique `name`, the recognized `values`, selectors for the relevant visible copy in priority order, and the JSON-LD property to collect as `jsonLdKey`. The gate loops over these definitions for every locale and compares each fact against the same fact on English. Use narrowly scoped selectors: values found elsewhere on the page must not establish agreement. Choose values represented consistently in visible copy and JSON-LD; the gate does not translate or infer equivalent facts.
+
+Empty or malformed configurations, invalid selectors, and duplicate fact names fail with exit code 2 before fetching. Visible matching is case-insensitive and uses substrings after whitespace normalization, which also recognizes inflected text such as Finnish `Los Angelesissa`. JSON-LD comparison uses the configured canonical value and trims surrounding whitespace.
+
+Extraction excludes explicitly hidden elements and ancestors (`hidden`, `aria-hidden="true"`, inline `display:none` or `visibility:hidden/collapse`) and script, style, and template content. This is a static HTML check: it does not execute JavaScript or compute visibility from stylesheets.
 
 Each JSON report row describes one locale/fact combination using `fact`, `visibleValue`, and `jsonLdValues`. City rows also retain `visibleCity` and `jsonLdCities` for compatibility with the original city report. The HTML table identifies the fact on each row.
 
