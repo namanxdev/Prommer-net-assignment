@@ -1,0 +1,301 @@
+{
+  "timestamp": "2026-09-27T08:26:41.801Z",
+  "source": {
+    "locale": "en",
+    "url": "https://prommer.net/",
+    "facts": {
+      "city": "New York"
+    },
+    "visibleCity": "New York"
+  },
+  "rows": [
+    {
+      "locale": "en",
+      "fact": "city",
+      "url": "https://prommer.net/",
+      "httpStatus": 200,
+      "visibleValue": "New York",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "CONFLICT"
+      ],
+      "reason": "Visible city is absent from this page’s JSON-LD values",
+      "visibleCity": "New York",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "de",
+      "fact": "city",
+      "url": "https://prommer.net/de/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "es",
+      "fact": "city",
+      "url": "https://prommer.net/es/",
+      "httpStatus": 200,
+      "visibleValue": null,
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "UNKNOWN"
+      ],
+      "reason": "No recognized city in p.hero-subtitle or p.lead",
+      "visibleCity": null,
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "fr",
+      "fact": "city",
+      "url": "https://prommer.net/fr/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "pt",
+      "fact": "city",
+      "url": "https://prommer.net/pt/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "it",
+      "fact": "city",
+      "url": "https://prommer.net/it/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "nl",
+      "fact": "city",
+      "url": "https://prommer.net/nl/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "fi",
+      "fact": "city",
+      "url": "https://prommer.net/fi/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "sv",
+      "fact": "city",
+      "url": "https://prommer.net/sv/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "pl",
+      "fact": "city",
+      "url": "https://prommer.net/pl/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "id",
+      "fact": "city",
+      "url": "https://prommer.net/id/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "da",
+      "fact": "city",
+      "url": "https://prommer.net/da/",
+      "httpStatus": 200,
+      "visibleValue": "Los Angeles",
+      "jsonLdValues": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ],
+      "statuses": [
+        "DRIFT"
+      ],
+      "reason": "Visible city differs from EN (New York)",
+      "visibleCity": "Los Angeles",
+      "jsonLdCities": [
+        "Los Angeles",
+        "Los Angeles",
+        "Los Angeles"
+      ]
+    },
+    {
+      "locale": "cs",
+      "fact": "city",
+      "url": "https://prommer.net/cs/",
+      "httpStatus": 403,
+      "visibleValue": null,
+      "jsonLdValues": [],
+      "statuses": [
+        "UNKNOWN"
+      ],
+      "reason": "HTTP 403",
+      "visibleCity": null,
+      "jsonLdCities": []
+    }
+  ],
+  "summary": {
+    "total": 13,
+    "locales": 13,
+    "facts": 1,
+    "pass": 0,
+    "drift": 10,
+    "conflict": 1,
+    "unknown": 2
+  },
+  "verdict": "FAIL"
+}
