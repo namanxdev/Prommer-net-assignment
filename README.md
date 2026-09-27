@@ -4,6 +4,8 @@ Truth Drift Gate checks whether each locale homepage's visible facts agree with 
 
 Structured data is what search engines and AI agents read. When it disagrees with visible copy, the site tells humans one city and machines another. This check identifies disagreements; it does not decide which city is correct.
 
+Live report: https://truth-drift-gate.vercel.app
+
 ## Run
 
 Requires **Node.js 18 or newer**. The only dependency is `cheerio`, pinned to `1.0.0-rc.12` for compatibility across Node 18 releases. HTTP requests use Node's built-in `fetch` with a normal browser User-Agent.
